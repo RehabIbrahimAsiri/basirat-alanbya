@@ -37,11 +37,11 @@ df.columns = df.columns.str.strip()
 # اختيار الجانب الحياتي
 aspect = st.selectbox("اختر الجانب الحياتي:", df['الجانب الحياتي'].unique())
 
-# اختيار المشكلة
+# اختيار المشكلة بناءً على الجانب
 problems = df[df['الجانب الحياتي'] == aspect]['المشكلة'].unique()
 selected_problem = st.selectbox("اختر المشكلة:", problems)
 
-# عرض النصيحة
+# عرض النصيحة والدليل ومرجع الدليل
 if selected_problem:
     row = df[(df['الجانب الحياتي'] == aspect) & (df['المشكلة'] == selected_problem)].iloc[0]
     st.markdown(f"""
@@ -52,7 +52,8 @@ if selected_problem:
         <p><b>مرجع الدليل:</b> {row['مرجع الدليل']}</p>
     </div>
     """, unsafe_allow_html=True)
-# --- في نهاية الصفحة لإضافة قسم التواصل والملاحظات ---
+
+# إضافة نص التواصل في نهاية الصفحة
 st.markdown(
     """
     <hr style="border: 1px solid #ccc;">
