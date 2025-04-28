@@ -52,3 +52,16 @@ if selected_problem:
         <p><b>مرجع الدليل:</b> {row['مرجع الدليل']}</p>
     </div>
     """, unsafe_allow_html=True)
+# --- في نهاية الصفحة لإضافة قسم التواصل والملاحظات ---
+st.markdown(
+    """
+    <hr style="border: 1px solid #ccc;">
+    <div style='text-align: center; padding-top: 20px; font-size: 18px;'>
+        إذا واجهت مشكلة لم يتم دراستها ضمن المنصة، أو لاحظت ملاحظة ترغب بمشاركتها معنا،<br>
+        نرجو تزويدنا بها عبر البريد الإلكتروني التالي:<br><br>
+        <a href="mailto:rahooob64@gmail.com" style="color: #001f3f; font-weight: bold;">rahooob64@gmail.com</a><br><br>
+        شاكرين لك تعاونك ومساهمتك في تطوير منصة بصيرة الأنبياء.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
