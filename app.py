@@ -31,7 +31,7 @@ st.markdown(
 )
 
 # تحميل البيانات
-df = pd.read_excel("Rehab_cleaned.xlsx")
+df = pd.read_excel("Basirat_Al_Anbiya.xlsx")
 df.columns = df.columns.str.strip()
 
 # اختيار الجانب الحياتي
