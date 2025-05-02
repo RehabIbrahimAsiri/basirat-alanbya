@@ -37,11 +37,11 @@ df.columns = df.columns.str.strip()
 # اختيار الجانب الحياتي
 aspect = st.selectbox("اختر الجانب الحياتي:", df['الجانب الحياتي'].unique())
 
-# اختيار المشكلة بناءً على الجانب
+# اختيار المشكلة
 problems = df[df['الجانب الحياتي'] == aspect]['المشكلة'].unique()
 selected_problem = st.selectbox("اختر المشكلة:", problems)
 
-# عرض النصيحة والدليل ومرجع الدليل
+# عرض النصيحة
 if selected_problem:
     row = df[(df['الجانب الحياتي'] == aspect) & (df['المشكلة'] == selected_problem)].iloc[0]
     st.markdown(f"""
@@ -52,17 +52,3 @@ if selected_problem:
         <p><b>مرجع الدليل:</b> {row['مرجع الدليل']}</p>
     </div>
     """, unsafe_allow_html=True)
-
-# إضافة نص التواصل في نهاية الصفحة
-st.markdown(
-    """
-    <hr style="border: 1px solid #ccc;">
-    <div style='text-align: center; padding-top: 20px; font-size: 18px;'>
-        إذا واجهت مشكلة لم يتم دراستها ضمن المنصة، أو لاحظت ملاحظة ترغب بمشاركتها معنا،<br>
-        نرجو تزويدنا بها عبر البريد الإلكتروني التالي:<br><br>
-        <a href="mailto:rahooob64@gmail.com" style="color: #001f3f; font-weight: bold;">rahooob64@gmail.com</a><br><br>
-        شاكرين لك تعاونك ومساهمتك في تطوير منصة بصيرة الأنبياء.
-    </div>
-    """,
-    unsafe_allow_html=True
-)
