@@ -55,11 +55,12 @@ def calculate_like_ratio(problem):
     total = len(problem_data)
     return int((likes / total) * 100)
 
-# الشعار + عداد الزوار (العداد في اليسار)
+# الشعار في اليمين وعدد الزوار في اليسار
 col1, col2 = st.columns([1, 8])
 with col1:
     st.markdown(f"<div style='font-size: 16px; color:#003366;'>👥 عدد الزوار: <strong>{visitor_count}</strong></div>", unsafe_allow_html=True)
 with col2:
+    st.markdown("<div style='text-align: left;'>", unsafe_allow_html=True)
     st.image("logo.png", width=120)
 
 # العنوان والوصف
@@ -111,17 +112,14 @@ if selected_problem:
             save_feedback_excel(row['المشكلة'], "غير مفيدة")
             st.warning("شكرًا لملاحظتك. سنعمل على تحسين النصيحة بإذن الله.")
 
-# قسم صندوق الاقتراحات
+# صندوق الاقتراحات - حفظ في ملف
 st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
 with st.form("suggestion_form"):
     st.markdown("<h5 style='color:#003366;'>🌿 هل لديك اقتراح يُسهم في تحسين المنصة؟</h5>", unsafe_allow_html=True)
     suggestion = st.text_area("اكتب اقتراحك هنا", placeholder="مثال: أقترح إضافة نصيحة عن الشعور بالذنب...")
     send = st.form_submit_button("إرسال")
     if send and suggestion.strip():
-        st.info("📬 هل ترغب في إرسال الاقتراح الآن بالبريد؟")
-        suggestion_link = f"mailto:rahooob64@gmail.com?subject=اقتراح%20لمنصة%20بصيرة%20الأنبياء&body={suggestion}"
-        st.markdown(f"""
-            <a href='{suggestion_link}' target='_blank' style='color:#001f3f; font-weight:bold; font-size:18px;'>
-            ✉️ اضغط هنا لإرسال الاقتراح بالبريد
-            </a>
-        """, unsafe_allow_html=True)
+        with open("suggestions.txt", "a", encoding="utf-8") as f:
+            f.write(suggestion + "\n" + "-"*40 + "\n")
+        st.success("✅ تم استلام اقتراحك، شكرًا لمساهمتك في تطوير المنصة!")
+
