@@ -55,24 +55,20 @@ def calculate_like_ratio(problem):
     total = len(problem_data)
     return int((likes / total) * 100)
 
-# الشعار في اليمين وعدد الزوار في اليسار
-col1, col2 = st.columns([1, 8])
+# الشعار وعدد الزوار
+col1, col2 = st.columns([8, 1])
 with col1:
-    st.markdown(f"<div style='font-size: 16px; color:#003366;'>👥 عدد الزوار: <strong>{visitor_count}</strong></div>", unsafe_allow_html=True)
-with col2:
-    st.markdown("<div style='text-align: left;'>", unsafe_allow_html=True)
     st.image("logo.png", width=120)
+with col2:
+    st.markdown(f"<div style='font-size: 16px; color:#003366; text-align:left;'>👥 عدد الزوار: <strong>{visitor_count}</strong></div>", unsafe_allow_html=True)
 
 # العنوان والوصف
-st.markdown(
-    """
+st.markdown("""
     <div style='text-align: center; padding-top: 10px;'>
         <h1 style='color: black;'>بصيرة الأنبياء</h1>
         <p style='font-size: 18px;'>حكمة النبوة.. لحل المشكلات الحياتية بإلهام وطمأنينة</p>
     </div>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 # تحميل البيانات
 df = pd.read_excel("Basirat_Al_Anbiya.xlsx")
@@ -86,7 +82,7 @@ selected_problem = st.selectbox("اختر المشكلة:", problems)
 # عرض البطاقة + التقييم + النسبة
 if selected_problem:
     row = df[(df['الجانب الحياتي'] == aspect) & (df['المشكلة'] == selected_problem)].iloc[0]
-    
+
     st.markdown(f"""
     <div class="card" style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: white;'>
         <h4 style='color:#001f3f;'>المشكلة: {row['المشكلة']}</h4>
@@ -96,12 +92,10 @@ if selected_problem:
     </div>
     """, unsafe_allow_html=True)
 
-    # نسبة الإعجاب
     ratio = calculate_like_ratio(row['المشكلة'])
     if ratio is not None:
         st.markdown(f"<p style='color:#003366;'>📊 نسبة الرضا عن هذه النصيحة: <strong>{ratio}%</strong></p>", unsafe_allow_html=True)
 
-    # أزرار التقييم
     col_like, col_dislike = st.columns([1, 1])
     with col_like:
         if st.button("👍 مفيدة"):
@@ -112,14 +106,25 @@ if selected_problem:
             save_feedback_excel(row['المشكلة'], "غير مفيدة")
             st.warning("شكرًا لملاحظتك. سنعمل على تحسين النصيحة بإذن الله.")
 
-# صندوق الاقتراحات - حفظ في ملف
-st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
-with st.form("suggestion_form"):
-    st.markdown("<h5 style='color:#003366;'>🌿 هل لديك اقتراح يُسهم في تحسين المنصة؟</h5>", unsafe_allow_html=True)
-    suggestion = st.text_area("اكتب اقتراحك هنا", placeholder="مثال: أقترح إضافة نصيحة عن الشعور بالذنب...")
-    send = st.form_submit_button("إرسال")
-    if send and suggestion.strip():
-        with open("suggestions.txt", "a", encoding="utf-8") as f:
-            f.write(suggestion + "\n" + "-"*40 + "\n")
-        st.success("✅ تم استلام اقتراحك، شكرًا لمساهمتك في تطوير المنصة!")
-
+# صندوق الاقتراحات عبر Google Form
+st.markdown("""
+    <hr style='border: 1px solid #ccc; margin-top: 40px;'>
+    <div style='
+        background-color: #f9f9f9;
+        border: 2px dashed #003366;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+        text-align: center;
+        font-size: 18px;
+        color: #003366;
+    '>
+        🌿 <strong>هل لديك اقتراح يُسهم في تحسين منصة بصيرة الأنبياء؟</strong><br><br>
+        ✍️ يسعدنا استقبال أفكارك وملاحظاتك بكل حب واهتمام.<br><br>
+        <a href="https://forms.gle/vdBTMaqKXCoaM64c6" target="_blank"
+           style="color: white; background-color: #003366; padding: 12px 25px;
+                  text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+            📩 اضغط هنا لتقديم اقتراحك
+        </a>
+    </div>
+""", unsafe_allow_html=True)
