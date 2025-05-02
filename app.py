@@ -55,7 +55,7 @@ def calculate_like_ratio(problem):
     total = len(problem_data)
     return int((likes / total) * 100)
 
-# الشعار + عداد الزوار
+# الشعار + عداد الزوار (العداد في اليسار)
 col1, col2 = st.columns([1, 8])
 with col1:
     st.markdown(f"<div style='font-size: 16px; color:#003366;'>👥 عدد الزوار: <strong>{visitor_count}</strong></div>", unsafe_allow_html=True)
@@ -118,5 +118,10 @@ with st.form("suggestion_form"):
     suggestion = st.text_area("اكتب اقتراحك هنا", placeholder="مثال: أقترح إضافة نصيحة عن الشعور بالذنب...")
     send = st.form_submit_button("إرسال")
     if send and suggestion.strip():
+        st.info("📬 هل ترغب في إرسال الاقتراح الآن بالبريد؟")
         suggestion_link = f"mailto:rahooob64@gmail.com?subject=اقتراح%20لمنصة%20بصيرة%20الأنبياء&body={suggestion}"
-        st.markdown(f"<a href='{suggestion_link}' target='_blank' style='color:#001f3f; font-weight:bold;'>📩 اضغط هنا لإرسال الاقتراح بالبريد</a>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <a href='{suggestion_link}' target='_blank' style='color:#001f3f; font-weight:bold; font-size:18px;'>
+            ✉️ اضغط هنا لإرسال الاقتراح بالبريد
+            </a>
+        """, unsafe_allow_html=True)
