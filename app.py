@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 import os
-from openpyxl import load_workbook
+import csv
+from datetime import datetime
 
 # إعداد الصفحة
 st.set_page_config(page_title="بصيرة الأنبياء", layout="wide")
 
-# جعل المنصة من اليمين لليسار
+# المنصة من اليمين لليسار
 st.markdown("""
     <style>
         html, body, [class*="css"] {
@@ -31,29 +32,19 @@ def update_counter():
 
 visitor_count = update_counter()
 
-# دالة حفظ التقييم في ملف Excel
-def save_feedback_excel(problem, result):
-    file_path = "feedback_data.xlsx"
-    if not os.path.exists(file_path):
-        df = pd.DataFrame(columns=["المشكلة", "التقييم"])
-        df.to_excel(file_path, index=False)
-    wb = load_workbook(file_path)
-    ws = wb.active
-    ws.append([problem, result])
-    wb.save(file_path)
+# دالة لحفظ التقييم في ملف CSV داخل مجلد سري
+def save_feedback_to_csv(problem, rating):
+    folder = "Data"
+    os.makedirs(folder, exist_ok=True)
+    filename = os.path.join(folder, "feedback_data.csv")
+    file_exists = os.path.isfile(filename)
 
-# حساب نسبة الإعجاب
-def calculate_like_ratio(problem):
-    file_path = "feedback_data.xlsx"
-    if not os.path.exists(file_path):
-        return None
-    df_feedback = pd.read_excel(file_path)
-    problem_data = df_feedback[df_feedback["المشكلة"] == problem]
-    if len(problem_data) == 0:
-        return None
-    likes = len(problem_data[problem_data["التقييم"] == "مفيدة"])
-    total = len(problem_data)
-    return int((likes / total) * 100)
+    with open(filename, mode="a", encoding="utf-8", newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(["المشكلة", "التقييم", "الوقت"])
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        writer.writerow([problem, rating, now])
 
 # الشعار وعدد الزوار
 col1, col2 = st.columns([8, 1])
@@ -79,12 +70,12 @@ aspect = st.selectbox("اختر الجانب الحياتي:", df['الجانب 
 problems = df[df['الجانب الحياتي'] == aspect]['المشكلة'].unique()
 selected_problem = st.selectbox("اختر المشكلة:", problems)
 
-# عرض البطاقة + التقييم + النسبة
+# عرض البطاقة + أزرار التقييم
 if selected_problem:
     row = df[(df['الجانب الحياتي'] == aspect) & (df['المشكلة'] == selected_problem)].iloc[0]
 
     st.markdown(f"""
-    <div class="card" style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: white;'>
+    <div class="card" style='border: 1p solid #ccc; padding: 20px; border-radius: 10px; background-color: white;'>
         <h4 style='color:#001f3f;'>المشكلة: {row['المشكلة']}</h4>
         <p><b>النصيحة:</b> {row['النصيحة']}</p>
         <p><b>الدليل:</b> {row['الدليل']}</p>
@@ -92,25 +83,21 @@ if selected_problem:
     </div>
     """, unsafe_allow_html=True)
 
-    ratio = calculate_like_ratio(row['المشكلة'])
-    if ratio is not None:
-        st.markdown(f"<p style='color:#003366;'>📊 نسبة الرضا عن هذه النصيحة: <strong>{ratio}%</strong></p>", unsafe_allow_html=True)
-
     col_like, col_dislike = st.columns([1, 1])
     with col_like:
         if st.button("👍 مفيدة"):
-            save_feedback_excel(row['المشكلة'], "مفيدة")
+            save_feedback_to_csv(row['المشكلة'], "مفيدة")
             st.success("شكرًا! سعداء بأنها أفادتك 🌟")
     with col_dislike:
         if st.button("👎 لم تفدني"):
-            save_feedback_excel(row['المشكلة'], "غير مفيدة")
+            save_feedback_to_csv(row['المشكلة'], "غير مفيدة")
             st.warning("شكرًا لملاحظتك. سنعمل على تحسين النصيحة بإذن الله.")
 
 # صندوق الاقتراحات عبر Google Form
 st.markdown("""
     <hr style='border: 1px solid #ccc; margin-top: 40px;'>
     <div style='
-        background-color: #f9f9f9;
+        background-color: #f9f;
         border: 2px dashed #003366;
         border-radius: 12px;
         padding: 25px;
@@ -119,7 +106,7 @@ st.markdown("""
         font-size: 18px;
         color: #003366;
     '>
-        🌿 <strong>هل لديك اقتراح يُسهم في تحسين منصة بصيرة الأنبياء؟</strong><br><br>
+        🌿 <strong>هل لديك اقتراح يُسهم في تحسين منصة بصيرة الأنبياء؟<strong><br><br>
         ✍️ يسعدنا استقبال أفكارك وملاحظاتك بكل حب واهتمام.<br><br>
         <a href="https://forms.gle/vdBTMaqKXCoaM64c6" target="_blank"
            style="color: white; background-color: #003366; padding: 12px 25px;
