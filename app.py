@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-import csv
 import os
+import json
 from datetime import datetime
 
 # إعداد الصفحة
@@ -17,7 +17,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# عداد الزوار (يُخزن في ملف نصي)
+# عداد الزوار
 def update_counter():
     if not os.path.exists("counter.txt"):
         with open("counter.txt", "w") as f:
@@ -32,17 +32,17 @@ def update_counter():
 
 visitor_count = update_counter()
 
-# دالة لحفظ التقييمات في CSV
-def save_feedback_to_csv(problem, rating):
-    filename = "feedback_data.csv"
+# دالة حفظ التقييم في ملف JSON
+def save_feedback_to_json(problem, rating):
+    filename = "feedback_log.json"
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    file_exists = os.path.isfile(filename)
-
-    with open(filename, mode="a", encoding="utf-8", newline="") as file:
-        writer = csv.writer(file)
-        if not file_exists:
-            writer.writerow(["المشكلة", "التقييم", "الوقت"])
-        writer.writerow([problem, rating, now])
+    log = {
+        "المشكلة": problem,
+        "التقييم": rating,
+        "الوقت": now
+    }
+    with open(filename, "a", encoding="utf-8") as f:
+        f.write(json.dumps(log, ensure_ascii=False) + "\n")
 
 # الشعار وعدد الزوار
 col1, col2 = st.columns([8, 1])
@@ -59,16 +59,16 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# تحميل البيانات من ملف Excel
+# تحميل البيانات من Excel
 df = pd.read_excel("Basirat_Al_Anbiya.xlsx")
 df.columns = df.columns.str.strip()
 
-# اختيار الجانب الحياتي والمشكلة
+# اختيار الجانب والمشكلة
 aspect = st.selectbox("اختر الجانب الحياتي:", df['الجانب الحياتي'].unique())
 problems = df[df['الجانب الحياتي'] == aspect]['المشكلة'].unique()
 selected_problem = st.selectbox("اختر المشكلة:", problems)
 
-# عرض البطاقة + التقييم
+# عرض النصيحة والتقييم
 if selected_problem:
     row = df[(df['الجانب الحياتي'] == aspect) & (df['المشكلة'] == selected_problem)].iloc[0]
 
@@ -84,14 +84,15 @@ if selected_problem:
     col_like, col_dislike = st.columns([1, 1])
     with col_like:
         if st.button("👍 مفيدة"):
-            save_feedback_to_csv(row['المشكلة'], "مفيدة")
-            st.success("شكرًا! سعداء بأنها أفادتك 🌟")
+            save_feedback_to_json(row['المشكلة'], "مفيدة")
+            st.success("✅ تم حفظ التقييم في JSON")
+
     with col_dislike:
         if st.button("👎 لم تفدني"):
-            save_feedback_to_csv(row['المشكلة'], "غير مفيدة")
-            st.warning("شكرًا لملاحظتك. سنعمل على تحسين النصيحة بإذن الله.")
+            save_feedback_to_json(row['المشكلة'], "غير مفيدة")
+            st.success("✅ تم حفظ التقييم في JSON")
 
-# صندوق الاقتراحات عبر Google Form
+# صندوق الاقتراحات
 st.markdown("""
     <hr style='border: 1px solid #ccc; margin-top: 40px;'>
     <div style='
