@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-import json
-from datetime import datetime
 
 # إعداد الصفحة
 st.set_page_config(page_title="بصيرة الأنبياء", layout="wide")
@@ -32,17 +30,11 @@ def update_counter():
 
 visitor_count = update_counter()
 
-# دالة حفظ التقييم في ملف JSON
-def save_feedback_to_json(problem, rating):
-    filename = "feedback_log.json"
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log = {
-        "المشكلة": problem,
-        "التقييم": rating,
-        "الوقت": now
-    }
-    with open(filename, "a", encoding="utf-8") as f:
-        f.write(json.dumps(log, ensure_ascii=False) + "\n")
+# تهيئة تقييمات الجلسة
+if "likes" not in st.session_state:
+    st.session_state.likes = 0
+if "dislikes" not in st.session_state:
+    st.session_state.dislikes = 0
 
 # الشعار وعدد الزوار
 col1, col2 = st.columns([8, 1])
@@ -59,7 +51,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# تحميل البيانات من Excel
+# تحميل البيانات
 df = pd.read_excel("Basirat_Al_Anbiya.xlsx")
 df.columns = df.columns.str.strip()
 
@@ -83,14 +75,14 @@ if selected_problem:
 
     col_like, col_dislike = st.columns([1, 1])
     with col_like:
-        if st.button("👍 مفيدة"):
-            save_feedback_to_json(row['المشكلة'], "مفيدة")
-            st.success("✅ تم حفظ التقييم في JSON")
+        if st.button(f"👍 مفيدة ({st.session_state.likes})"):
+            st.session_state.likes += 1
+            st.success("✅ شكرًا على تقييمك!")
 
     with col_dislike:
-        if st.button("👎 لم تفدني"):
-            save_feedback_to_json(row['المشكلة'], "غير مفيدة")
-            st.success("✅ تم حفظ التقييم في JSON")
+        if st.button(f"👎 لم تفدني ({st.session_state.dislikes})"):
+            st.session_state.dislikes += 1
+            st.success("✅ شكرًا على تقييمك!")
 
 # صندوق الاقتراحات
 st.markdown("""
