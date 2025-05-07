@@ -97,7 +97,7 @@ if selected_problem:
 st.markdown("""
     <hr style='border: 1px solid #ccc; margin-top: 40px;'>
     <div style='
-        background-color: #f9f;
+        background-color: #f9f9f9;
         border: 2px dashed #003366;
         border-radius: 12px;
         padding: 25px;
